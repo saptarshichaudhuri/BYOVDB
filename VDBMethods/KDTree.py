@@ -80,6 +80,10 @@ class KDTree(object):
                 # Goes into the left branch, then the right branch if needed
                 #TODO: Simplify this line of code
                 #heap[0][0] is the -1*dist_sq;
+                
+                #Suspicion - This piece of code doesn't navigate to the right
+                #subtree
+                
                 for b in (dx < 0, dx >= 0)[:1 + (dx * dx < -heap[0][0])]:
                     get_knn(node[b], point, k, return_dist_sq, 
                         heap, i, (tiebreaker << 1) | b)
