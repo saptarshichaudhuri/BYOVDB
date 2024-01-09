@@ -9,6 +9,11 @@ from VDBMethods.SimpleDict import *
 class VDBUnitTest(unittest.TestCase):
 
     def test_all(self):
+        
+        dim = 1
+
+        def rand_point(dim):
+            return [np.random.uniform(-1, 1) for d in range(dim)]
 
         '''points = [rand_point(dim) for x in range(10000)]
         additional_points = [rand_point(dim) for x in range(100)]
@@ -21,8 +26,6 @@ class VDBUnitTest(unittest.TestCase):
         points = [[2],[3],[4],[5],[6]]
         additional_points = [[1],[7]]
         query_points = [[4.9]]
-
-        dim = len(points[0])
 
         def dist_sq_func(a, b):
             return sum((x - b[i]) ** 2 for i, x in enumerate(a))
@@ -41,9 +44,6 @@ class VDBUnitTest(unittest.TestCase):
                 return (dist_sq_func(nearest, point), nearest) 
             return nearest
 
-        def rand_point(dim):
-            return [np.random.uniform(-1, 1) for d in range(dim)]
-
 
         kd_tree_results = []
         naive_results = []
@@ -57,20 +57,20 @@ class VDBUnitTest(unittest.TestCase):
             kd_tree = KDTree(points, dim)
             for point in additional_points:
                 kd_tree.add_point(point)
-            kd_tree_results.append(tuple(kd_tree.get_knn([0] * dim, nn_count)))
+            #kd_tree_results.append(tuple(kd_tree.get_knn([0] * dim, nn_count)))
             #for t in query_points:
             #    kd_tree_results.append(tuple(kd_tree.get_knn(t, nn_count)))
-            #for t in query_points:
-            #    kd_tree_results.append(tuple(kd_tree.get_nearest(t)))
+            for t in query_points:
+                kd_tree_results.append(tuple(kd_tree.get_nearest(t)))
 
         def test_and_bench_naive():
             nn_count = 8
             all_points = points + additional_points
-            naive_results.append(tuple(get_knn_naive(all_points, [0] * dim, nn_count)))
+            #naive_results.append(tuple(get_knn_naive(all_points, [0] * dim, nn_count)))
             #for t in query_points:
             #    naive_results.append(tuple(get_knn_naive(all_points, t, nn_count)))
-            #for t in query_points:
-            #    naive_results.append(tuple(get_nearest_naive(all_points, t)))
+            for t in query_points:
+                naive_results.append(tuple(get_nearest_naive(all_points, t)))
 
         print("Running KDTree...")
         cProfile.run("test_and_bench_kd_tree()")
@@ -81,10 +81,10 @@ class VDBUnitTest(unittest.TestCase):
         print("Query results same as naive version?: {}"
             .format(kd_tree_results == naive_results))
         
-        print('********************************')
-        print(kd_tree_results)
-        print('********************************')
-        print(naive_results)
+        #print('********************************')
+        #print(kd_tree_results)
+        #print('********************************')
+        #print(naive_results)
 
         self.assertEqual(kd_tree_results, naive_results, 
             "Query results mismatch")
