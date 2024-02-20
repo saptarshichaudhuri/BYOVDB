@@ -58,8 +58,8 @@ class VDBUnitTest(unittest.TestCase):
             for point in additional_points:
                 kd_tree.add_point(point)
             #kd_tree_results.append(tuple(kd_tree.get_knn([0] * dim, nn_count)))
-            #for t in query_points:
-            #    kd_tree_results.append(tuple(kd_tree.get_knn(t, nn_count)))
+            for t in query_points:
+                kd_tree_results.append(tuple(kd_tree.get_knn(t, 3)))
             for t in query_points:
                 kd_tree_results.append(tuple(kd_tree.get_nearest(t)))
 
@@ -67,8 +67,8 @@ class VDBUnitTest(unittest.TestCase):
             nn_count = 8
             all_points = points + additional_points
             #naive_results.append(tuple(get_knn_naive(all_points, [0] * dim, nn_count)))
-            #for t in query_points:
-            #    naive_results.append(tuple(get_knn_naive(all_points, t, nn_count)))
+            for t in query_points:
+                naive_results.append(tuple(get_knn_naive(all_points, t, 3)))
             for t in query_points:
                 naive_results.append(tuple(get_nearest_naive(all_points, t)))
 
@@ -81,16 +81,14 @@ class VDBUnitTest(unittest.TestCase):
         print("Query results same as naive version?: {}"
             .format(kd_tree_results == naive_results))
         
-        #print('********************************')
-        #print(kd_tree_results)
-        #print('********************************')
-        #print(naive_results)
+        print('********************************')
+        print(kd_tree_results)
+        print('********************************')
+        print(naive_results)
 
-        self.assertEqual(kd_tree_results, naive_results, 
-            "Query results mismatch")
+        self.assertEqual(kd_tree_results,naive_results, msg = "Query results mismatch")
         
-        self.assertEqual(len(list(kd_tree)), len(points) + len(additional_points), 
-            "Number of points from iterator mismatch")
+        self.assertEqual(len(list(kd_tree)), len(points) + len(additional_points),msg = "Query results mismatch")
 
 if __name__ == '__main__':
     unittest.main()

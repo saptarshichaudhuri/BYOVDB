@@ -1,3 +1,7 @@
+'''
+inspired from https://github.com/Vectorized/Python-KD-Tree/blob/master/kd_tree.py
+'''
+
 class KDTree(object):
     
     """
@@ -14,7 +18,7 @@ class KDTree(object):
 
     points are a list of points: [[0, 1, 2], [12.3, 4.5, 2.3], ...]
     """
-    def __init__(self, points, dim, dist_sq_func=None):
+    def __init__(self, points, dim):
         """Makes the KD-Tree for fast lookup.
 
         Parameters
@@ -28,12 +32,6 @@ class KDTree(object):
             between the two points. 
             If omitted, it uses the default implementation.
         """
-
-        #TODO: Implement numpy based euclidean measurement
-        if dist_sq_func is None:
-            dist_sq_func = lambda a, b: sum((x - b[i]) ** 2 
-                for i, x in enumerate(a))
-        
 
         def make(points, i=0):
             if len(points) > 1:
@@ -70,7 +68,7 @@ class KDTree(object):
         import heapq
         def get_knn(node, point, k, return_dist_sq, heap, i=0, tiebreaker=1):
             if node is not None:
-                dist_sq = dist_sq_func(point, node[2])
+                dist_sq = self.calculate_squared_euclidean(point, node[2])
                 dx = node[2][i] - point[i]
                 if len(heap) < k:
                     heapq.heappush(heap, (-dist_sq, tiebreaker, node[2]))
@@ -85,7 +83,7 @@ class KDTree(object):
                 #subtree
                 
                 for b in (dx < 0, dx >= 0)[:1 + (dx * dx < -heap[0][0])]:
-                    get_knn(node[b], point, k, return_dist_sq, 
+                    get_knn(node[b], point, k, return_dist_sq,
                         heap, i, (tiebreaker << 1) | b)
             if tiebreaker == 1:
                 return [(-h[0], h[2]) if return_dist_sq else h[2] for h in sorted(heap)][::-1]
@@ -101,6 +99,10 @@ class KDTree(object):
         self._get_knn = get_knn 
         self._root = make(points)
         self._walk = walk
+
+    def calculate_squared_euclidean(self, a,b):
+        #return np.linalg.norm(np.array(a)-np.array(b))    
+        return sum((x - b[i]) ** 2 for i, x in enumerate(a))        
 
     def __iter__(self):
         return self._walk(self._root)
